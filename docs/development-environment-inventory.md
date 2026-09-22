@@ -1,11 +1,35 @@
 # Development environment inventory
 
-## Core runtime
+## Minimal usable development environment
+
+### Required
 - Linux
 - nginx
 - PHP >= 7.3
 - Composer
-- MariaDB / MySQL (pdo_mysql)
+- MariaDB / MySQL
+- Elasticsearch 5
+
+MariaDB is required by Doctrine and also stores Symfony sessions.
+
+Elasticsearch is used by search and many entity listings. The application can boot without it, but important pages will fail or become unusable.
+
+### Required for write operations
+- Memcached
+
+Memcached is used by Symfony Lock for non-blocking locks in create/update actions. Read-only browsing can work without it, but normal development should currently include it.
+
+### Optional / degraded mode
+- RabbitMQ
+  - Used for view counters and Web Push queues.
+  - Producer failures are caught, so basic application requests continue to work.
+- WebSocket server
+  - Used for realtime workflow features.
+- SMTP
+  - Not required in development.
+  - Swiftmailer uses a file spool; actual delivery can remain disabled.
+- Chromium
+  - Only required for shared-link screenshot generation.
 
 ## Required PHP extensions
 - curl
@@ -26,20 +50,14 @@
 - gmp
 - bcmath
 
-## Application services
-- MariaDB — database
-- Elasticsearch 5 — search
-- RabbitMQ — background jobs
-- Memcached — cache
-- WebSocket server — realtime features
-- SMTP server — email
-
 ## Asset build
 - Node.js <= 10
 - Less 3.13
 - Java
 - Closure Compiler
 - YUI Compressor
+
+These are required to rebuild the current Assetic CSS/JS assets.
 
 ## Media / auxiliary tools
 - ImageMagick
@@ -48,10 +66,9 @@
 - pngquant
 - optipng
 - jpegoptim
-- Chromium — shared-link screenshots
 
 ## External integrations
-Not required for a basic local startup:
+Not required for basic local development:
 - Google API
 - Facebook
 - Twitter
@@ -61,11 +78,12 @@ Not required for a basic local startup:
 - Web Push
 - Google Analytics
 
-## Next check
-Determine which of the following can be disabled for a basic development instance:
-- Elasticsearch
-- RabbitMQ
-- Memcached
-- WebSockets
-- SMTP
-- Chromium
+## Current minimal target
+
+For a reasonably functional development instance:
+
+```
+PHP + nginx + MariaDB + Elasticsearch + Memcached
+```
+
+RabbitMQ, WebSockets, SMTP and Chromium can initially remain disabled.
